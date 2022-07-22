@@ -5,7 +5,9 @@
     "homepage": "https://github.com/cdgco/warrantytool",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "dell-warranty": "node dell-warranty.js",
+        "hp-warranty": "node hp-warranty.js"
     },
     "author": "cdgco",
     "license": "MIT",
