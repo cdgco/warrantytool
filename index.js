@@ -6,8 +6,7 @@ export async function checkDell(computer) {
     if (process.argv.slice(2)[0] == undefined || process.argv.slice(2)[0] == '') {
         console.log('Please provide a serial number and try again.');
         return;
-    }
-    else {
+    } else {
         var spinner = null
         const browserURL = 'http://127.0.0.1:21222';
         puppeteer.connect({ browserURL }).then(async browser => {
@@ -58,8 +57,7 @@ export async function checkDell(computer) {
             console.log("\nWarranty Information:");
 
             const p = new Table({
-                columns: [
-                    {
+                columns: [{
                         name: "SERVICE",
                         title: "SERVICE",
                         maxLen: 60,
@@ -94,6 +92,7 @@ export async function checkDell(computer) {
                 }
                 puppeteer.launch({ headless: true }).then(async browser => {
                     const page = await browser.newPage()
+                    await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36');
                     await page.goto('https://www.dell.com/support/home/en-us/product-support/servicetag/' + process.argv.slice(2)[0] + '/overview');
                     try {
                         const successDiv = await page.waitForSelector('#viewDetailsRedesign', {
@@ -138,8 +137,7 @@ export async function checkDell(computer) {
                     console.log("\nWarranty Information:");
 
                     const p = new Table({
-                        columns: [
-                            {
+                        columns: [{
                                 name: "SERVICE",
                                 title: "SERVICE",
                                 maxLen: 60,
@@ -174,8 +172,7 @@ export async function checkDell(computer) {
                     console.log("\nAn unexpected error occured. Please check your configuration and try again.");
                     process.exit()
                 })
-            }
-            else {
+            } else {
                 if (spinner != null && spinner.isSpinning) {
                     spinner.stop();
                 }
@@ -191,8 +188,7 @@ export async function checkHP(computer) {
     if (process.argv.slice(2)[0] == undefined || process.argv.slice(2)[0] == '') {
         console.log('Please provide a serial number and try again.');
         return;
-    }
-    else {
+    } else {
         var spinner = null
         const browserURL = 'http://127.0.0.1:21222';
         puppeteer.connect({ browserURL }).then(async browser => {
@@ -230,8 +226,7 @@ export async function checkHP(computer) {
                             var row = warrantyExtended.children[i]
                             if (row.children[0].children[0].children[0].innerText.includes('Warranty type')) {
                                 var idx = 1
-                            }
-                            else {
+                            } else {
                                 var idx = 0
                             }
                             var rowData = { "SERVICE": row.children[0].children[idx].children[1].innerText.trim(), "START DATE": row.children[0].children[idx + 2].children[1].innerText.trim(), "END DATE": row.children[0].children[idx + 3].children[1].innerText.trim() }
@@ -245,8 +240,7 @@ export async function checkHP(computer) {
                             var row = warrantyBase.children[i]
                             if (row.children[0].children[0].children[0].innerText.includes('Warranty type')) {
                                 var idx = 1
-                            }
-                            else {
+                            } else {
                                 var idx = 0
                             }
                             var rowData = { "SERVICE": row.children[0].children[idx].children[1].innerText.trim(), "START DATE": row.children[0].children[idx + 2].children[1].innerText.trim(), "END DATE": row.children[0].children[idx + 3].children[1].innerText.trim() }
@@ -283,6 +277,7 @@ export async function checkHP(computer) {
                 }
                 puppeteer.launch({ headless: true }).then(async browser => {
                     const page = await browser.newPage()
+                    await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36');
                     await page.goto('https://support.hp.com/us-en/checkwarranty');
                     try {
                         await page.type('#wFormSerialNumber', process.argv.slice(2)[0], { delay: 5 })
@@ -305,17 +300,16 @@ export async function checkHP(computer) {
                         const active = document.getElementById("w-details").innerText.includes("Warranty status details for your product: Active")
                         const warrantyExtended = document.getElementById("additionalExtWarranty_1").children[0]
                         const warrantyBase = document.getElementById("warrantyResultBase").children[0]
-        
+
                         var warrantyData = []
-        
+
                         if (warrantyExtended && warrantyExtended.children.length > 0) {
                             for (var i = 0; i < warrantyExtended.children.length; i++) {
                                 if (warrantyExtended.children[i].innerText != '') {
                                     var row = warrantyExtended.children[i]
                                     if (row.children[0].children[0].children[0].innerText.includes('Warranty type')) {
                                         var idx = 1
-                                    }
-                                    else {
+                                    } else {
                                         var idx = 0
                                     }
                                     var rowData = { "SERVICE": row.children[0].children[idx].children[1].innerText.trim(), "START DATE": row.children[0].children[idx + 2].children[1].innerText.trim(), "END DATE": row.children[0].children[idx + 3].children[1].innerText.trim() }
@@ -329,8 +323,7 @@ export async function checkHP(computer) {
                                     var row = warrantyBase.children[i]
                                     if (row.children[0].children[0].children[0].innerText.includes('Warranty type')) {
                                         var idx = 1
-                                    }
-                                    else {
+                                    } else {
                                         var idx = 0
                                     }
                                     var rowData = { "SERVICE": row.children[0].children[idx].children[1].innerText.trim(), "START DATE": row.children[0].children[idx + 2].children[1].innerText.trim(), "END DATE": row.children[0].children[idx + 3].children[1].innerText.trim() }
@@ -368,8 +361,7 @@ export async function checkHP(computer) {
                     console.log("\nAn unexpected error occured. Please check your configuration and try again.");
                     process.exit()
                 })
-            }
-            else {
+            } else {
                 if (spinner != null && spinner.isSpinning) {
                     spinner.stop();
                 }
