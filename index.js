@@ -285,10 +285,15 @@ export async function checkHP(computer) {
                 if (spinner === null) {
                     spinner = ora('Retrieving warranty information...').start();
                 }
-                puppeteer.launch({ headless: true }).then(async browser => {
-                    const page = await browser.newPage()
+                puppeteer.launch({
+                    headless: false,
+                }).then(async browser => {
+                    const [page] = await browser.pages();
+                    const session = await page.target().createCDPSession();
+                    const { windowId } = await session.send('Browser.getWindowForTarget');
+                    await session.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'minimized' } });
+                    await page.goto('https://support.hp.com/us-en/checkwarranty')
                     await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36');
-                    await page.goto('https://support.hp.com/us-en/checkwarranty');
                     try {
                         await page.type('#wFormSerialNumber', process.argv.slice(2)[0], { delay: 5 })
                         const successDiv = await page.waitForSelector('#btnWFormSubmit', {
@@ -299,7 +304,6 @@ export async function checkHP(computer) {
                                 timeout: 15 * 1000, // 15 seconds
                             });
                     } catch (e) {
-                        console.log(e)
                         spinner.fail('Unable to find warranty information.')
                         await browser.close()
                         return
