@@ -3,8 +3,25 @@ import puppeteer from 'puppeteer';
 import { printTable, Table } from "console-table-printer";
 
 export async function checkDell(computer) {
-    if (process.argv.slice(2)[0] == undefined || process.argv.slice(2)[0] == '') {
-        console.log('Please provide a serial number and try again.');
+    const p = new Table({
+        columns: [{
+                name: "SERVICE",
+                title: "SERVICE",
+                maxLen: 60,
+            },
+            {
+                name: "START",
+                title: "START DATE",
+
+            },
+            {
+                name: "END",
+                title: "END DATE",
+            },
+        ],
+    });
+    if (process.argv.slice(2)[0] == undefined || process.argv.slice(2)[0] == '' || process.argv.slice(2)[0].length != 7) {
+        console.log('Please provide a valid serial number and try again.');
         return;
     } else {
         var spinner = null
@@ -38,7 +55,9 @@ export async function checkDell(computer) {
                 var warrantyData = []
                 for (var i = 1; i < warrantyTable.children.length; i++) {
                     var row = warrantyTable.children[i]
-                    var rowData = { SERVICE: row.children[0].innerText.trim(), START: row.children[1].children[row.children[1].children.length - 1].innerText.trim(), END: row.children[2].children[row.children[2].children.length - 1].innerText.trim() }
+                    var date = Date.parse(row.children[2].children[row.children[2].children.length - 1].innerText.trim())
+                    var color = date < Date.now() ? 'red' : 'green'
+                    var rowData = [row.children[0].innerText.trim(), row.children[1].children[row.children[1].children.length - 1].innerText.trim(), row.children[2].children[row.children[2].children.length - 1].innerText.trim(), color]
                     warrantyData.push(rowData)
                 }
                 var result = [model, serviceTag, serviceCode, shipDate, warrantyData, active];
@@ -56,25 +75,8 @@ export async function checkDell(computer) {
             printTable(columns)
             console.log("\nWarranty Information:");
 
-            const p = new Table({
-                columns: [{
-                        name: "SERVICE",
-                        title: "SERVICE",
-                        maxLen: 60,
-                    },
-                    {
-                        name: "START",
-                        title: "START DATE",
-
-                    },
-                    {
-                        name: "END",
-                        title: "END DATE",
-                    },
-                ],
-            });
             for (var i = 0; i < warranty[4].length; i++) {
-                p.addRow(warranty[4][i]);
+                p.addRow({ SERVICE: warranty[4][i][0], START: warranty[4][i][1], END: warranty[4][i][2] }, { color: warranty[4][i][3] });
             }
             p.printTable();
             if (warranty[5]) {
@@ -118,7 +120,9 @@ export async function checkDell(computer) {
                         var warrantyData = []
                         for (var i = 1; i < warrantyTable.children.length; i++) {
                             var row = warrantyTable.children[i]
-                            var rowData = { SERVICE: row.children[0].innerText.trim(), START: row.children[1].children[row.children[1].children.length - 1].innerText.trim(), END: row.children[2].children[row.children[2].children.length - 1].innerText.trim() }
+                            var date = Date.parse(row.children[2].children[row.children[2].children.length - 1].innerText.trim())
+                            var color = date < Date.now() ? 'red' : 'green'
+                            var rowData = [row.children[0].innerText.trim(), row.children[1].children[row.children[1].children.length - 1].innerText.trim(), row.children[2].children[row.children[2].children.length - 1].innerText.trim(), color]
                             warrantyData.push(rowData)
                         }
                         var result = [model, serviceTag, serviceCode, shipDate, warrantyData, active];
@@ -136,25 +140,8 @@ export async function checkDell(computer) {
                     printTable(columns)
                     console.log("\nWarranty Information:");
 
-                    const p = new Table({
-                        columns: [{
-                                name: "SERVICE",
-                                title: "SERVICE",
-                                maxLen: 60,
-                            },
-                            {
-                                name: "START",
-                                title: "START DATE",
-
-                            },
-                            {
-                                name: "END",
-                                title: "END DATE",
-                            },
-                        ],
-                    });
                     for (var i = 0; i < warranty[4].length; i++) {
-                        p.addRow(warranty[4][i]);
+                        p.addRow({ SERVICE: warranty[4][i][0], START: warranty[4][i][1], END: warranty[4][i][2] }, { color: warranty[4][i][3] });
                     }
                     p.printTable();
                     if (warranty[5]) {
@@ -185,8 +172,25 @@ export async function checkDell(computer) {
 }
 
 export async function checkHP(computer) {
-    if (process.argv.slice(2)[0] == undefined || process.argv.slice(2)[0] == '') {
-        console.log('Please provide a serial number and try again.');
+    const p = new Table({
+        columns: [{
+                name: "SERVICE",
+                title: "SERVICE",
+                maxLen: 60,
+            },
+            {
+                name: "START",
+                title: "START DATE",
+
+            },
+            {
+                name: "END",
+                title: "END DATE",
+            },
+        ],
+    });
+    if (process.argv.slice(2)[0] == undefined || process.argv.slice(2)[0] == '' || process.argv.slice(2)[0].length < 10 || process.argv.slice(2)[0].length > 15) {
+        console.log('Please provide a valid serial number and try again.');
         return;
     } else {
         var spinner = null
@@ -229,7 +233,8 @@ export async function checkHP(computer) {
                             } else {
                                 var idx = 0
                             }
-                            var rowData = { "SERVICE": row.children[0].children[idx].children[1].innerText.trim(), "START DATE": row.children[0].children[idx + 2].children[1].innerText.trim(), "END DATE": row.children[0].children[idx + 3].children[1].innerText.trim() }
+                            var color = row.children[0].children[idx + 1].children[1].innerText.trim() == 'Expired' ? 'red' : 'green'
+                            var rowData = [row.children[0].children[idx].children[1].innerText.trim(), row.children[0].children[idx + 2].children[1].innerText.trim(), row.children[0].children[idx + 3].children[1].innerText.trim(), color]
                             warrantyData.push(rowData)
                         }
                     }
@@ -243,7 +248,8 @@ export async function checkHP(computer) {
                             } else {
                                 var idx = 0
                             }
-                            var rowData = { "SERVICE": row.children[0].children[idx].children[1].innerText.trim(), "START DATE": row.children[0].children[idx + 2].children[1].innerText.trim(), "END DATE": row.children[0].children[idx + 3].children[1].innerText.trim() }
+                            var color = row.children[0].children[idx + 1].children[1].innerText.trim() == 'Expired' ? 'red' : 'green'
+                            var rowData = [row.children[0].children[idx].children[1].innerText.trim(), row.children[0].children[idx + 2].children[1].innerText.trim(), row.children[0].children[idx + 3].children[1].innerText.trim(), color]
                             warrantyData.push(rowData)
                         }
                     }
@@ -261,7 +267,11 @@ export async function checkHP(computer) {
 
             printTable(columns)
             console.log("\nWarranty Information:");
-            printTable(warranty[3])
+            for (var i = 0; i < warranty[3].length; i++) {
+                p.addRow({ "SERVICE": warranty[3][i][0], "START": warranty[3][i][1], "END": warranty[3][i][2] }, { color: warranty[3][i][3] })
+            }
+
+            p.printTable
             if (warranty[4]) {
                 spinner.succeed('Warranty Active')
             } else {
@@ -289,6 +299,7 @@ export async function checkHP(computer) {
                                 timeout: 15 * 1000, // 15 seconds
                             });
                     } catch (e) {
+                        console.log(e)
                         spinner.fail('Unable to find warranty information.')
                         await browser.close()
                         return
@@ -312,7 +323,8 @@ export async function checkHP(computer) {
                                     } else {
                                         var idx = 0
                                     }
-                                    var rowData = { "SERVICE": row.children[0].children[idx].children[1].innerText.trim(), "START DATE": row.children[0].children[idx + 2].children[1].innerText.trim(), "END DATE": row.children[0].children[idx + 3].children[1].innerText.trim() }
+                                    var color = row.children[0].children[idx + 1].children[1].innerText.trim() == 'Expired' ? 'red' : 'green'
+                                    var rowData = [row.children[0].children[idx].children[1].innerText.trim(), row.children[0].children[idx + 2].children[1].innerText.trim(), row.children[0].children[idx + 3].children[1].innerText.trim(), color]
                                     warrantyData.push(rowData)
                                 }
                             }
@@ -326,7 +338,8 @@ export async function checkHP(computer) {
                                     } else {
                                         var idx = 0
                                     }
-                                    var rowData = { "SERVICE": row.children[0].children[idx].children[1].innerText.trim(), "START DATE": row.children[0].children[idx + 2].children[1].innerText.trim(), "END DATE": row.children[0].children[idx + 3].children[1].innerText.trim() }
+                                    var color = row.children[0].children[idx + 1].children[1].innerText.trim() == 'Expired' ? 'red' : 'green'
+                                    var rowData = [row.children[0].children[idx].children[1].innerText.trim(), row.children[0].children[idx + 2].children[1].innerText.trim(), row.children[0].children[idx + 3].children[1].innerText.trim(), color]
                                     warrantyData.push(rowData)
                                 }
                             }
@@ -345,7 +358,11 @@ export async function checkHP(computer) {
                     printTable(columns)
                     console.log("\nWarranty Information:");
 
-                    printTable(warranty[3])
+                    for (var i = 0; i < warranty[3].length; i++) {
+                        p.addRow({ "SERVICE": warranty[3][i][0], "START": warranty[3][i][1], "END": warranty[3][i][2] }, { color: warranty[3][i][3] })
+                    }
+
+                    p.printTable()
                     if (warranty[4]) {
                         spinner.succeed('Warranty Active')
                     } else {
