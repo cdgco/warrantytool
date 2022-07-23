@@ -1,4 +1,7 @@
 # Dell / HP Warranty Lookup Tool
+
+![](image.png)
+
 Warranty Tool is a cross-platform command line tool to quickly check warranties by serial number. Warranty tool runs on Chrome through Puppeteer and will either use your existing open browser, or run in a headless instance.
 
 # Installation
